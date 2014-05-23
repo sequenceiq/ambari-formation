@@ -1,0 +1,47 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  gather_facts: no
+  vars:
+    domain: mycorp.kom
+    tempdir: /tmp
+    yaml:
+      server:
+        ami: ami-12345
+        fqdn: server.mycorp.kom
+      node1:
+        ami: ami-12345
+        fqdn: node1.mycorp.kom
+      node2:
+        ami: ami-12345
+        fqdn: node1.mycorp.kom
+
+      node3:
+        ami: ami-12345
+        fqdn: node1.mycorp.kom
+
+
+  tasks:
+
+    - name: Generate yml from template
+      template: src=template/cf.yml.j2 dest={{tempdir}}/test.yml
+      tags: test1
+
+    - name: Converts yml to json
+      # debug: msg="{{ lookup('file', './ansible-generate-cf-template.yml') | to_nice_json }}"
+      command:  echo {{ lookup('template', './template/cf.yml.j2') }}
+      register: yaml
+      tags: test1
+
+    - name: Incude Vars from yaml
+      include_vars: ./wordpress.yml
+      tags: test
+
+    - name: show TEMPLATE
+      # debug: var=yaml
+      template: src=template/test.json.j2 dest=./test.json
+      #debug: msg="{{yaml.stdout_lines | to_nice_json }}"
+      tags: test
+
+    - name: Template eval
+      debug: msg="{{ lookup('template', './template/cf.yml.j2') }}"
