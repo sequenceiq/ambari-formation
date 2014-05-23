@@ -7,6 +7,12 @@ generate-json() {
       return
   fi
 
+  if [ -f $OUTPUT ] ;then
+      echo [ERROR] output alredy exists: $OUTPUT
+      return
+  fi
+
+
   cat <<EOF
   convert yaml to json
       YAML: $INPUT
