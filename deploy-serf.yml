@@ -1,0 +1,14 @@
+---
+-
+    #hosts: tag_owner_lalyos
+    hosts: ambari
+    gather_facts: no
+    user: ec2-user
+
+    tasks:
+
+      - name: copies script to /tmp
+        copy: src=create-routing dest=/tmp mode=0755
+
+      - name: creates routing
+        script: create-routing
