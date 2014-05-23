@@ -1,0 +1,28 @@
+RESERV=$(curl -s 169.254.169.254/latest/meta-data/reservation-id)
+INS_ID=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
+ZONE=$(curl -s 169.254.169.254/latest/meta-data/placement/availability-zone)
+LAUNCH_IDX=$(curl -s 169.254.169.254/latest/meta-data/ami-launch-index)
+
+export AWS_DEFAULT_REGION=${ZONE%[a-z]}
+
+INSTANCES=$(aws ec2 describe-instances --filter Name=reservation-id,Values=$RESERV --query Reservations[].Instances[].InstanceId --out text)
+OTHER_INSTANCES=$(sed "s/$INS_ID//"<<<"$INSTANCES")
+
+# my bridge
+sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.255.255.0
+
+# route to others
+route() { 
+  while read idx ip; do 
+    echo [DEBUG]idx=$idx IP=$ip
+    sudo route add -net 172.17.1$idx.0  netmask 255.255.255.0  gw $ip
+  done
+} 
+
+aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | route
+
+sudo sh -c "cat > /etc/sysconfig/docker" <<"EOF"
+other_args="-b bridge0"
+EOF
+
+sudo /etc/init.d/docker restart

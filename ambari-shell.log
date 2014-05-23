@@ -1,0 +1,17 @@
+// AmbariShell 1.1.0.RC3 log opened at 2014-05-22 12:37:23
+host list
+hint
+blueprint defaults
+hint
+blueprint list
+blueprint show --id  multi-node-hdfs-yarn
+hint
+cluster build --blueprint  multi-node-hdfs-yarn 
+hint
+cluster assign --host bal-felso.mycorp.kom --hostGroup master
+cluster assign --hostGroup slaves --host bal-also.mycorp.kom
+cluster assign --hostGroup slaves --host jobb-felso.mycorp.kom
+cluster assign --hostGroup slaves --host jobbalso.mycorp.kom
+hint
+cluster preview
+cluster create

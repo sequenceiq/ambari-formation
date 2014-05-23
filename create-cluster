@@ -1,0 +1,28 @@
+SUBNET=35
+sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.32.$SUBNET.1  netmask 255.255.255.0
+
+sudo route add -net 172.32.12.0 netmask 255.255.255.0  gw 172.31.12.241
+sudo route add -net 172.17.0.0 netmask 255.255.255.0  gw 172.31.10.39
+sudo route add -net 172.32.36.0 netmask 255.255.255.0  gw 172.31.2.36
+sudo route add -net 172.32.35.0 netmask 255.255.255.0  gw 172.31.2.35
+
+sudo sh -c "cat > /etc/sysconfig/docker" <<"EOF"
+other_args="-b bridge0"
+EOF
+
+sudo /etc/init.d/docker restart
+
+reset-route() {
+sudo ifconfig bridge0 down && sudo brctl delbr bridge0  
+sudo route delete -net 172.32.12.0 netmask 255.255.255.0  gw 172.31.12.241
+sudo route delete -net 172.17.0.0 netmask 255.255.255.0  gw 172.31.10.39
+sudo route delete -net 172.32.36.0 netmask 255.255.255.0  gw 172.31.2.36
+sudo route delete -net 172.32.35.0 netmask 255.255.255.0  gw 172.31.2.35
+}
+
+docker run -it --dns 127.0.0.1 -h bal-felso.mycorp.kom sequenceiq/dnsmasq /bin/bash
+
+## inside
+serf agent --join 172.32.35.2 --config-dir /usr/local/serf/etc/ --bind $(hostname -i) --node $(hostname -f)
+
+
