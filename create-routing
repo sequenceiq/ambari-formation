@@ -22,7 +22,7 @@ route() {
 aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | route
 
 sudo sh -c "cat > /etc/sysconfig/docker" <<"EOF"
-other_args="-b bridge0"
+other_args="-b bridge0 -H unix:// -H tcp://0.0.0.0:4243"
 EOF
 
 sudo /etc/init.d/docker restart
