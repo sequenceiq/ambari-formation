@@ -12,12 +12,14 @@ OTHER_INSTANCES=$(sed "s/$INS_ID//"<<<"$INSTANCES")
 sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.255.255.0
 
 # route to others
-route() { 
-  while read idx ip; do 
-    echo [DEBUG]idx=$idx IP=$ip
-    sudo route add -net 172.17.1$idx.0  netmask 255.255.255.0  gw $ip
+# read from stdin <launch-idx> <priv-ip>
+# can be used as: ec2-desc-ins | route()
+route() {
+  while read idx ip; do
+    SUBNET=172.17.1$idx
+    sudo route add -net $SUBNET.0  netmask 255.255.255.0  gw $ip
   done
-} 
+}
 
 aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | route
 
