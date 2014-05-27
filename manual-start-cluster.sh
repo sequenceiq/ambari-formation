@@ -9,7 +9,7 @@
 # http://docs.docker.io/installation/amazon/
 # amzn-ami-pv-2014.03.1.x86_64-ebs (ami-2918e35e)
 
-#: ${DEBUG:=1}
+: ${DEBUG:=1}
 debug() {
   [ -n "$DEBUG" ] && echo [DEBUG] "$@" 1>&2
 }
@@ -34,6 +34,7 @@ unset ROLE INS_TYPE KEY_NAME OWNER EC2_NAME ROLE
 : ${OWNER:=$USER}
 : ${EC2_NAME:=amb-clust}
 : ${ROLE:=Arn=arn:aws:iam::755047402263:instance-profile/readonly-role}
+: ${AMI:=ami-d91ad8ae}
 
 debug-var CLUSTER_SIZE
 debug-var INS_TYPE
@@ -45,10 +46,11 @@ debug-var ROLE
 RUN_RESP=$(run-cmd \
   aws ec2 run-instances \
   --count $CLUSTER_SIZE \
-  --image-id ami-a908cbde \
+  --image-id $AMI \
   --instance-type $INS_TYPE \
   --iam-instance-profile $ROLE \
-  --key-name $KEY_NAME
+  --key-name $KEY_NAME \
+  --user-data file://./create-routing
 )
 
 RESERVATION=$(echo $RUN_RESP|jq .ReservationId -r)
