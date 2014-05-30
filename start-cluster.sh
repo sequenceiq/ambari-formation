@@ -56,7 +56,7 @@ RUN_RESP=$(run-cmd \
   --instance-type $INS_TYPE \
   --iam-instance-profile $ROLE \
   --key-name $KEY_NAME \
-  --user-data file://./create-routing
+  --user-data file://./ec2-init.sh
 )
 
 # todo use vpc:
