@@ -1,5 +1,9 @@
 #!/bin/bash
 
+: ${NODE_PREFIX=amb}
+: ${MYDOMAIN:=mycorp.kom}
+: ${IMAGE:="sequenceiq/ambari:dns"}
+
 RESERV=$(curl -s 169.254.169.254/latest/meta-data/reservation-id)
 INS_ID=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
 ZONE=$(curl -s 169.254.169.254/latest/meta-data/placement/availability-zone)
@@ -10,7 +14,7 @@ export AWS_DEFAULT_REGION=${ZONE%[a-z]}
 INSTANCES=$(aws ec2 describe-instances --filter Name=reservation-id,Values=$RESERV --query Reservations[].Instances[].InstanceId --out text)
 OTHER_INSTANCES=$(sed "s/$INS_ID//"<<<"$INSTANCES")
 
-: <<KOMMENT
+#: <<KOMMENT
 # my bridge
 sudo ifconfig bridge0 down && sudo brctl delbr bridge0
 sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.255.255.0
@@ -31,12 +35,28 @@ sudo sh -c "cat > /etc/sysconfig/docker" <<"EOF"
 other_args="-b bridge0 -H unix:// -H tcp://0.0.0.0:4243"
 EOF
 sudo /etc/init.d/docker restart
-KOMMENT
+#KOMMENT
 
 LAUNCH_IDX_OF_FIST_OTHER=$(aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[0].AmiLaunchIndex --out text)
 SERF_JOIN_IP=172.17.1${LAUNCH_IDX_OF_FIST_OTHER}.2
 echo SERF_JOIN_IP=$SERF_JOIN_IP
 
-IMAGE=sequenceiq/ambari
+
+#######################
+# WARMUP
+#######################
+IMAGE=ambari-warmup
+
 #docker run -e SERF_JOIN_IP=$SERF_JOIN_IP -d --dns 127.0.0.1 -h node-$LAUNCH_IDX.mycorp.kom $IMAGE
-docker run -e SERF_JOIN_IP=$SERF_JOIN_IP -d -it --dns 127.0.0.1 -h node-$LAUNCH_IDX.mycorp.kom $IMAGE /bin/bash
+
+[ $LAUNCH_IDX -eq 0 ] && AMBARI_ROLE="--tag ambari-role=server,agent" || AMBARI_ROLE=""
+
+CMD="docker run -d -p 8080:8080 -e SERF_JOIN_IP=$SERF_JOIN_IP --dns 127.0.0.1 --name ${NODE_PREFIX}${LAUNCH_IDX} -h ${NODE_PREFIX}${LAUNCH_IDX}.${MYDOMAIN} --entrypoint /usr/local/serf/bin/start-serf-agent.sh  $IMAGE $AMBARI_ROLE"
+
+cat << EOF
+=========================================
+CMD=$CMD
+=========================================
+EOF
+
+$CMD

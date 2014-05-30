@@ -1,7 +1,11 @@
+# generate this list:
+# aws ec2 describe-instances --filter Name=tag:Name,Values=amb-clust --query Reservations[].Instances[].PublicIpAddress --out text|xargs -n 1
+#
+
 [ambari]
-54.76.102.228
-54.76.92.212
-54.76.107.80
+54.76.118.81
+54.76.117.192
+54.76.118.192
 
 [ambari:vars]
 ansible_ssh_user=ec2-user

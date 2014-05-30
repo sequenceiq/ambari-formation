@@ -4,6 +4,9 @@
 # docker images serf/dnsmasq/ambari added
 # after single node ambari installation its backed into:
 # ami-a908cbde: 755047402263/docker-ambari-serf
+# ami-d91ad8ae: v0.0
+# ami-2121ec56: v0.1 docker ready linux with warmed ambari docker image
+# ami-2f39f458 : v0.2 docker ready linux with warmed ambari docker image
 
 # alternate candidate, from docker docs:
 # http://docs.docker.io/installation/amazon/
@@ -34,7 +37,9 @@ unset ROLE INS_TYPE KEY_NAME OWNER EC2_NAME ROLE
 : ${OWNER:=$USER}
 : ${EC2_NAME:=amb-clust}
 : ${ROLE:=Arn=arn:aws:iam::755047402263:instance-profile/readonly-role}
-: ${AMI:=ami-d91ad8ae}
+: ${AMI:=ami-2f39f458}
+# this vpc/subnet was created with the cloudformation from cloudbreak-api
+: ${SUBNET:=subnet-ec1bfc9b}
 
 debug-var CLUSTER_SIZE
 debug-var INS_TYPE
@@ -42,6 +47,7 @@ debug-var KEY_NAME
 debug-var OWNER
 debug-var EC2_NAME
 debug-var ROLE
+debug-var SUBNET
 
 RUN_RESP=$(run-cmd \
   aws ec2 run-instances \
@@ -52,6 +58,9 @@ RUN_RESP=$(run-cmd \
   --key-name $KEY_NAME \
   --user-data file://./create-routing
 )
+
+# todo use vpc:
+#--subnet-id $SUBNET \
 
 RESERVATION=$(echo $RUN_RESP|jq .ReservationId -r)
 debug-var RESERVATION
