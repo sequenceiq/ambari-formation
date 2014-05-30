@@ -21,3 +21,10 @@ EOF
 
   ruby -r json -r yaml -e "yaml = YAML.load(File.read('"$INPUT"')); print yaml.to_json" |jq .> $OUTPUT
 }
+
+
+json-diff() {
+  cat $1| jq . > d1
+  cat $2| jq . > d2
+  diff d1 d2
+}

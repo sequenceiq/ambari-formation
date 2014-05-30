@@ -7,22 +7,7 @@ Description: CoreOS stack
 Mappings:
   RegionMap:
     eu-west-1:
-      ami: ami-8368adf4
-    us-east-1:
-      ami: ami-3becf652
-    us-west-1:
-      ami: ami-e4dde5a1
-    us-west-2:
-      ami: ami-388bfe08
-    ap-southeast-1:
-      ami: ami-28bdee7a
-    ap-southeast-2:
-      ami: ami-7d2fb747
-    ap-northeast-1:
-      ami: ami-fb5822fa
-    sa-east-1:
-      ami: ami-83c76a9e
-
+      ami: ami-a908cbde
 
 # Parameters
 # =================================================
@@ -32,19 +17,15 @@ Parameters:
     Description: "EC2 instance type (e.g. m1.small, c1.medium, ...)"
     Type: String
     Default: c3.large
-    AllowedValues: [ t1.micro, m1.small, m1.medium, m1.large, m1.xlarge, m3.xlarge, m3.2xlarge, m2.xlarge, m2.2xlarge, m2.4xlarge, c1.medium, c1.xlarge, cc1.4xlarge, cc2.8xlarge, cg1.4xlarge, hi1.4xlarge, hs1.8xlarge, c3.large, c3.xlarge ]
+    AllowedValues: [ t1.micro, m1.small, m3.medium, c3.large, m3.large, c3.xlarge, m3.xlarge, c3.2xlarge ]
     ConstraintDescription: Must be a valid EC2 instance type
 
   ClusterSize:
     Description: Number of nodes in your cluster (3-12)
     Type: Number
-    Default: 2
-    MinValue: 2
+    Default: 3
+    MinValue: 3
     MaxValue: 12
-
-  DiscoveryURL:
-    Description: An unique etcd cluster discovery URL. Grab a new token from https://discovery.etcd.io/new
-    Type: String
 
   AdvertisedIPAddress:
     Type: String
@@ -61,47 +42,10 @@ Parameters:
     Description: The name of an existing EC2 Key Pair to allow SSH access to the instance.
     Type: String
 
-
 # Resources
 # =================================================
 
 Resources:
-
-  CoreOSELB:
-    Type: AWS::ElasticLoadBalancing::LoadBalancer
-    Properties:
-      CrossZone: true
-      Listeners:
-        - InstancePort: 80
-          Protocol: HTTP
-          LoadBalancerPort: 80
-      HealthCheck:
-        HealthyThreshold: 2
-        Timeout: 9
-        Interval: 10
-        UnhealthyThreshold: 5
-        Target: "HTTP:80/"
-      AvailabilityZones:
-        "Fn::GetAZs":
-          Ref: "AWS::Region"
-
-  CoreOSAccessKey:
-    Type: AWS::IAM::AccessKey
-    Properties:
-      UserName:
-        Ref: CoreOSUser
-
-  CoreOSUser:
-    DependsOn: CoreOSELB
-    Type: AWS::IAM::User
-    Properties:
-      Policies:
-        - PolicyName: ebs
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action: "elb:*"
-                Resource: "*"
 
   CoreOSSecurityGroup:
     DependsOn: CoreOSELB
@@ -115,17 +59,11 @@ Resources:
           CidrIp:
             Ref: AllowSSHFrom
 
-        - FromPort: 80
-          ToPort: 80
+        - FromPort: 8080
+          ToPort: 8080
           IpProtocol: tcp
-          SourceSecurityGroupOwnerId:
-            "Fn::GetAtt":
-              - CoreOSELB
-              - "SourceSecurityGroup.OwnerAlias"
-          SourceSecurityGroupName:
-            "Fn::GetAtt":
-              - CoreOSELB
-              - "SourceSecurityGroup.GroupName"
+          CidrIp:
+                Ref: AllowSSHFrom
 
   Ingress4001:
     Type: AWS::EC2::SecurityGroupIngress
