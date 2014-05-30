@@ -16,8 +16,8 @@ OTHER_INSTANCES=$(sed "s/$INS_ID//"<<<"$INSTANCES")
 
 #: <<KOMMENT
 # my bridge
-sudo ifconfig bridge0 down && sudo brctl delbr bridge0
-sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.255.255.0
+ifconfig bridge0 down && brctl delbr bridge0
+brctl addbr bridge0  && ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.255.255.0
 
 # route to others
 # read from stdin <launch-idx> <priv-ip>
@@ -25,16 +25,16 @@ sudo brctl addbr bridge0  && sudo ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netm
 route() {
   while read idx ip; do
     SUBNET=172.17.1$idx
-    sudo route add -net $SUBNET.0  netmask 255.255.255.0  gw $ip
+    route add -net $SUBNET.0  netmask 255.255.255.0  gw $ip
   done
 }
 
 aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | route
 
-sudo sh -c "cat > /etc/sysconfig/docker" <<"EOF"
+sh -c "cat > /etc/sysconfig/docker" <<"EOF"
 other_args="-b bridge0 -H unix:// -H tcp://0.0.0.0:4243"
 EOF
-sudo /etc/init.d/docker restart
+/etc/init.d/docker restart
 #KOMMENT
 
 LAUNCH_IDX_OF_FIST_OTHER=$(aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[0].AmiLaunchIndex --out text)
