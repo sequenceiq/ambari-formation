@@ -1,4 +1,5 @@
-
+# run user-data script
+ansible all -m raw -a "sudo bash -xc /var/lib/cloud/instance/scripts/part-001"
 
 # check serf members
 ansible all -m raw -a 'serf members --rpc-addr $(docker inspect --format "{{.NetworkSettings.IPAddress}}" $(docker ps -ql)):7373'
