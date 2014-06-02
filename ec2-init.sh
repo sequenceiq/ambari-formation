@@ -22,14 +22,14 @@ brctl addbr bridge0  && ifconfig bridge0 172.17.1${LAUNCH_IDX}.1  netmask 255.25
 # route to others
 # read from stdin <launch-idx> <priv-ip>
 # can be used as: ec2-desc-ins | route()
-route() {
+add-route() {
   while read idx ip; do
     SUBNET=172.17.1$idx
     route add -net $SUBNET.0  netmask 255.255.255.0  gw $ip
   done
 }
 
-aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | route
+aws ec2 describe-instances --instance-ids $OTHER_INSTANCES --query Reservations[].Instances[].[AmiLaunchIndex,PrivateIpAddress] --out text | add-route
 
 sh -c "cat > /etc/sysconfig/docker" <<"EOF"
 other_args="-b bridge0 -H unix:// -H tcp://0.0.0.0:4243"
