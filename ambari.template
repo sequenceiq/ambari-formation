@@ -180,14 +180,16 @@
             "DeviceName": "/dev/sdf",
             "Ebs": {
               "VolumeSize": "400",
-              "VolumeType": "gp2"
+              "VolumeType": "gp2",
+              "SnapshotId" : "snap-6ae1a692"
             }
           },
           {
             "DeviceName": "/dev/sdg",
             "Ebs": {
               "VolumeSize": "400",
-              "VolumeType": "gp2"
+              "VolumeType": "gp2",
+              "SnapshotId" : "snap-6ae1a692"
             }
           },
           {
