@@ -51,17 +51,7 @@
       "Default" : "t2.small",
       "AllowedValues" : [ "t2.micro","t2.small","t2.medium","m3.medium","m3.large","m3.xlarge","m3.2xlarge"],
       "ConstraintDescription" : "must be a valid EC2 instance type."
-    },
-    
-    "AMI" : {
-      "Description" : "AMI that's used to start instances",
-      "Type" : "String",
-      "MinLength": "12",
-      "MaxLength": "12",
-      "AllowedPattern" : "ami-[a-z0-9]{8}",
-      "ConstraintDescription" : "must follow pattern: ami-xxxxxxxx"
     }
-
   },
 
   "Mappings" : {
