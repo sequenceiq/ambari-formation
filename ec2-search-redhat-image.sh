@@ -2,7 +2,9 @@
 
 #redhat
 : ${OWNER:=309956199498}
-: ${FILTER:=RHEL-6.5}
+#: ${FILTER:=RHEL-6.5}
+: ${FILTER:=RHEL-6.5_GA-x86_64-7}
+
 
 get-ami-by-region() {
   case $1 in
@@ -26,7 +28,7 @@ list-image-in-region() {
   aws ec2 describe-images \
     --region $REG \
     --owners $OWNER \
-    --filter Name=virtualization-type,Values=hvm \
+    --filter Name=virtualization-type,Values=paravirtual \
     --query "Images[].{id:ImageId, name:Name, type:VirtualizationType, loc:ImageLocation, desc:Description}" \
     --out table \
     | grep $FILTER

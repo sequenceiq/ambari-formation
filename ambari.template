@@ -60,13 +60,13 @@
       "Public"  : { "CIDR" : "10.0.0.0/24" }
     },
     "AmiMap" : {
-      "eu-west-1" : { "ami" : "ami-af6faad8" },
-      "sa-east-1" : { "ami" : "ami-5fc76a42" },
-      "us-east-1" : { "ami" : "ami-5b697332" },
-      "us-west-2" : { "ami" : "ami-e08efbd0" },
-      "us-west-1" : { "ami" : "ami-5cdce419" },
-      "ap-southeast-1" : { "ami" : "ami-dcbeed8e" },
-      "ap-southeast-2" : { "ami" : "ami-452eb67f" }
+      "eu-west-1" : { "ami" : "ami-9368ade4" },
+      "sa-east-1" : { "ami" : "ami-abc76ab6" },
+      "us-east-1" : { "ami" : "ami-8d756fe4" },
+      "us-west-2" : { "ami" : "ami-aa8bfe9a" },
+      "us-west-1" : { "ami" : "ami-f6dde5b3" },
+      "ap-southeast-1" : { "ami" : "ami-5ebcef0c" },
+      "ap-southeast-2" : { "ami" : "ami-b72fb78d" }
     }
   },
 
