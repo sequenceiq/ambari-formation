@@ -2,7 +2,7 @@
 
 : ${NODE_PREFIX=amb}
 : ${MYDOMAIN:=mycorp.kom}
-: ${IMAGE:="sequenceiq/ambari:dns"}
+: ${IMAGE:="sequenceiq/ambari:latest"}
 
 RESERV=$(curl -s 169.254.169.254/latest/meta-data/reservation-id)
 INS_ID=$(curl -s 169.254.169.254/latest/meta-data/instance-id)
@@ -49,7 +49,7 @@ IMAGE=ambari-warmup
 
 #docker run -e SERF_JOIN_IP=$SERF_JOIN_IP -d --dns 127.0.0.1 -h node-$LAUNCH_IDX.mycorp.kom $IMAGE
 
-[ $LAUNCH_IDX -eq 0 ] && AMBARI_ROLE="--tag ambari-role=server,agent" || AMBARI_ROLE="--log-level debug"
+[ $LAUNCH_IDX -eq 0 ] && AMBARI_ROLE="--tag ambari-server=true" || AMBARI_ROLE="--log-level debug"
 
 CMD="docker run -d -p 8080:8080 -p 7373:7373 -e SERF_JOIN_IP=$SERF_JOIN_IP --dns 127.0.0.1  --dns-search=${MYDOMAIN} --name ${NODE_PREFIX}${LAUNCH_IDX} -h ${NODE_PREFIX}${LAUNCH_IDX}.${MYDOMAIN} --entrypoint /usr/local/serf/bin/start-serf-agent.sh  $IMAGE $AMBARI_ROLE"
 
