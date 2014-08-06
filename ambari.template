@@ -60,7 +60,7 @@
       "Public"  : { "CIDR" : "10.0.0.0/24" }
     },
     "AmiMap" : {
-      "eu-west-1" : { "ami" : "ami-9368ade4" },
+      "eu-west-1" : { "ami" : "ami-7a45970d" },
       "sa-east-1" : { "ami" : "ami-abc76ab6" },
       "us-east-1" : { "ami" : "ami-8d756fe4" },
       "us-west-2" : { "ami" : "ami-aa8bfe9a" },
