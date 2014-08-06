@@ -1,0 +1,25 @@
+- name: play-1 Starts amabri server via CloudFormation
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+      instance_type: m3.xlarge
+      instance_count: 11
+      region: eu-west-1
+      keypair: cloudbreak-key
+      stackname: ambari-formation
+  tasks:
+      - name: starts ambari nodes via cloudformation
+        cloudformation:
+          template: ./ambari.template
+          state: present
+          stack_name: "{{ stackname }}"
+          region: eu-west-1
+          tags:
+            owner: lalyos
+          template_parameters:
+            InstanceCount: "{{ instance_count }}"
+            InstanceType: "{{ instance_type }}"
+            StackName: "{{ stackname }}"
+            KeyName: "{{ keypair }}"
+            CBUserData: "#!/bin/bash"
