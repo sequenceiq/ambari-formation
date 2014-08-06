@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "CloudFormation template to create a VPC with a public subnet on EC2",
+  "Description" : "CloudFormation template to create an Ambari Cluster with VPC subnet",
 
   "Parameters" : {
 
