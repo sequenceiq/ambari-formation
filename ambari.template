@@ -167,7 +167,40 @@
         "InstanceType"   : { "Ref" : "InstanceType" },
         "KeyName"        : { "Ref" : "KeyName" },
         "AssociatePublicIpAddress" : "true",
-        "UserData"       : { "Fn::Base64" : { "Ref" : "CBUserData"}}
+        "UserData"       : { "Fn::Base64" : { "Ref" : "CBUserData"}},
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": "50",
+              "VolumeType": "gp2"
+            }
+          },
+          {
+            "DeviceName": "/dev/sdf",
+            "Ebs": {
+              "VolumeSize": "400",
+              "VolumeType": "gp2"
+            }
+          },
+          {
+            "DeviceName": "/dev/sdg",
+            "Ebs": {
+              "VolumeSize": "400",
+              "VolumeType": "gp2"
+            }
+          },
+          {
+            "DeviceName": "/dev/sdb",
+            "NoDevice": true,
+            "Ebs": {}
+          },
+          {
+            "DeviceName": "/dev/sdc",
+            "NoDevice": true,
+            "Ebs": {}
+          }
+        ]
       }
     },
 
